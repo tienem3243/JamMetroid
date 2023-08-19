@@ -239,8 +239,10 @@ MonoBehaviour:
   _deathExplosion: {fileID: 0}
   _minImpactForce: 2
   _source: {fileID: 451715560}
-  _landClips: []
-  _dashClips: []
+  _landClips:
+  - {fileID: 8300000, guid: 9357c5d45c6a61d44b60bb9d94d91492, type: 3}
+  _dashClips:
+  - {fileID: 8300000, guid: 9357c5d45c6a61d44b60bb9d94d91492, type: 3}
 --- !u!136 &102589384
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -598,7 +600,7 @@ GameObject:
   - component: {fileID: 451715559}
   - component: {fileID: 451715560}
   m_Layer: 0
-  m_Name: AudioClip
+  m_Name: AudioSource
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -629,7 +631,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 9357c5d45c6a61d44b60bb9d94d91492, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
