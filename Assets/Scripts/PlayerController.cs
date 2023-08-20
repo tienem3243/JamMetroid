@@ -246,8 +246,13 @@ public class PlayerController : MonoBehaviour
 
     private void HandleWallGrab()
     {
+
         // I added wallJumpLock but I honestly can't remember why and I'm too scared to remove it...
-        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Input.GetKey(KeyCode.Z) && Time.time > _timeLastWallJumped + _wallJumpLock;
+        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Time.time > _timeLastWallJumped + _wallJumpLock;
+        var grabbingValid = (_inputs.RawX < 0 && _isAgainstLeftWall) || (_inputs.RawX > 0 && _isAgainstRightWall);
+        grabbing = grabbing && grabbingValid;
+
+
 
         _rb.useGravity = !_grabbing;
         if (grabbing && !_grabbing)
@@ -290,6 +295,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.X) && !_hasDashed)
         {
+            
             _dashDir = new Vector3(_inputs.RawX, _inputs.RawY).normalized;
             if (_dashDir == Vector3.zero) _dashDir = _facingLeft ? Vector3.left : Vector3.right;
             _dashRing.up = _dashDir;
