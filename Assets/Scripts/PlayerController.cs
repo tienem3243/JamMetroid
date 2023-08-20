@@ -35,17 +35,18 @@ public class PlayerController : MonoBehaviour
         _inputs.RawX = (int)Input.GetAxisRaw("Horizontal");
         _inputs.RawY = (int)Input.GetAxisRaw("Vertical");
         _inputs.X = Input.GetAxis("Horizontal");
-        _inputs.Y = Input.GetAxis("Vertical");
+     /*   _inputs.Y = Input.GetAxis("Vertical");*/
 
-        _anim.SetInteger("RawY", _inputs.RawY);
-
+    /*    _anim.SetInteger("RawY", _inputs.RawY);
+        Debug.Log(_inputs.RawY);*/
         _facingLeft = _inputs.RawX != 1 && (_inputs.RawX == -1 || _facingLeft);
         if (!_grabbing) SetFacingDirection(_facingLeft); // Don't turn while grabbing the wall
     }
 
     private void SetFacingDirection(bool left)
     {
-        _anim.transform.rotation = left ? Quaternion.Euler(0, -90, 0) : Quaternion.Euler(0, 90, 0);
+        Debug.Log(left);
+        _anim.transform.rotation = left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
 
     #endregion
@@ -142,7 +143,8 @@ public class PlayerController : MonoBehaviour
         // _currentMovementLerpSpeed should be set to something crazy high to be effectively instant. But slowed down after a wall jump and slowly released
         _rb.velocity = Vector3.MoveTowards(_rb.velocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
 
-        _anim.SetBool("Walking", _inputs.RawX != 0 && IsGrounded);
+        _anim.SetBool("Running", _inputs.RawX != 0 && IsGrounded);
+     
     }
 
     #endregion
