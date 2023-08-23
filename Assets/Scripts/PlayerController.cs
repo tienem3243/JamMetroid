@@ -24,6 +24,12 @@ public class PlayerController : MonoBehaviour
         HandleWallGrab();
 
         HandleDashing();
+       
+    }
+
+    private void HandleAttack()
+    {
+        throw new NotImplementedException();
     }
 
     #region Inputs
@@ -248,9 +254,9 @@ public class PlayerController : MonoBehaviour
     {
 
         // I added wallJumpLock but I honestly can't remember why and I'm too scared to remove it...
-        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Time.time > _timeLastWallJumped + _wallJumpLock;
-        var grabbingValid = (_inputs.RawX < 0 && _isAgainstLeftWall) || (_inputs.RawX > 0 && _isAgainstRightWall);
-        grabbing = grabbing && grabbingValid;
+        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Time.time > _timeLastWallJumped + _wallJumpLock && _inputs.RawY >= 0f;
+        
+        
 
 
 
@@ -269,7 +275,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("stopped");
         }
 
-        if (_grabbing) _rb.velocity = new Vector3(0, _inputs.RawY * _slideSpeed * (_inputs.RawY < 0 ? 1 : 0.8f));
+        if (_grabbing) _rb.velocity = new Vector3(0,-_slideSpeed );
 
         _anim.SetBool("Climbing", _wallSliding || _grabbing);
     }
