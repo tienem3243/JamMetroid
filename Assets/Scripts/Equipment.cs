@@ -13,7 +13,8 @@ public abstract class Equipment : CustomBehaviour
     public string LayerName { get => layerName;  }
     public bool IsEquip
     {
-        get => isEquip; set
+        get => isEquip;
+        set
         {
             isEquip = value;
             if (isEquip == true)

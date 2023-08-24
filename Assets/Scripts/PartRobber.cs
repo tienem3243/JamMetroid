@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PartRobber : MonoBehaviour
 {
-   [SerializeField] EquipManager equipmanager;
+    [SerializeField] EquipManager equipmentManager;
     [SerializeField] float sizeDetect;
-    [SerializeField] WeaponSwap swap;
+    [SerializeField] CoroutineOD coroutineOD;
     private void OnDrawGizmos()
     {
         Gizmos.DrawWireSphere(transform.position, sizeDetect);
@@ -16,16 +17,40 @@ public class PartRobber : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(1))
         {
-            var target = Util.GetTransformFromTagName("Equipment", false, true, transform,sizeDetect);
-            Debug.Log(target);
+            List<GameObject> ignoreList=new List<GameObject>();
+            if(equipmentManager.GetCurrentEquipmentList()!=null)
+            {
+                ignoreList = equipmentManager.GetCurrentEquipmentList().Select(x => x.gameObject).ToList<GameObject>();
+            }
+            var target = Util.GetTransformFromTagName("Equipment", false, true, transform, sizeDetect, ignoreList);
+            
             if (target == null) return;
+
             Equipment equipment = target.GetComponent<Equipment>();
-            equipmanager.Equip(equipment, equipment.SlotRequire);
+          
+            if (equipment.IsEquip) return;
+         
+            if (!equipmentManager.ImplantAble(equipment.SlotRequire)) return;
+            coroutineOD.StartTimer(0.5f, 
+                (x) => CollectAniamtion(target, equipmentManager.GetTransformSlot(equipment.SlotRequire)),
+                () => Implant(equipment));
+           
         }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            equipmanager.RemoveEquipOnSlot("Hand");
+            equipmentManager.RemoveEquipOnSlot("Head");
         }
     }
-  
+
+    private void Implant(Equipment equipment)
+    {
+        equipmentManager.Equip(equipment, equipment.SlotRequire);
+    }
+
+    void CollectAniamtion(Transform equipment, Transform target)
+    {
+       
+            equipment.transform.position = Vector3.MoveTowards(equipment.position, target.position, 0.1f);   
+    }
+
 }

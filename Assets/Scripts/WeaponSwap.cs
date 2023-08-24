@@ -11,7 +11,11 @@ public class WeaponSwap : MonoBehaviour
        int index= animator.GetLayerIndex(name);
         for (int i = 0; i < animator.layerCount; i++)
         {
-            animator.SetLayerWeight(i, i == index ? 0 : 1);
+            animator.SetLayerWeight(i, i == index ? 1 : 0);
         }
+    }
+    public void Reset()
+    {
+        SwapLayer("Hand");
     }
 }

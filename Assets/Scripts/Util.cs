@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -50,7 +51,7 @@ public static class Util
     /// <summary>
     /// Get Transform from tag name.
     /// </summary>
-    public static Transform GetTransformFromTagName(string tagName, bool randomSelect, bool nearestSelect, Transform selfTrans,float maxDistance)
+    public static Transform GetTransformFromTagName(string tagName, bool randomSelect, bool nearestSelect, Transform selfTrans,float maxDistance, List<GameObject> ignoreList)
     {
         if (string.IsNullOrEmpty(tagName))
         {
@@ -72,9 +73,11 @@ public static class Util
                     Vector3 selfPos = selfTrans.position;
                     float nearrestDistance = float.MaxValue;
                     int nearrestIndex = -1;
+                    
                     for (int i = goTargets.Length - 1; i >= 0; i--)
                     {
                         GameObject go = goTargets[i];
+                        if (ignoreList != null && ignoreList.Contains(go)) continue;
                         float distance = Vector3.Distance(go.transform.position, selfPos);
                         
                         if (nearrestIndex < 0 || distance <= nearrestDistance)

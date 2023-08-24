@@ -24,12 +24,16 @@ public class PlayerController : MonoBehaviour
         HandleWallGrab();
 
         HandleDashing();
+        HandleAttack();
        
     }
 
     private void HandleAttack()
     {
-        throw new NotImplementedException();
+        if (Input.GetMouseButtonDown(0))
+        {
+            _anim.SetTrigger("Punch");
+        }
     }
 
     #region Inputs
@@ -178,13 +182,15 @@ public class PlayerController : MonoBehaviour
         {
             if (_grabbing || !IsGrounded && (_isAgainstLeftWall || _isAgainstRightWall))
             {
+               
                 _timeLastWallJumped = Time.time;
                 _currentMovementLerpSpeed = _wallJumpMovementLerp;
                 ExecuteJump(new Vector2(_isAgainstLeftWall ? _jumpForce : -_jumpForce, _jumpForce)); // Wall jump
+               
             }
             else if (IsGrounded || Time.time < _timeLeftGrounded + _coyoteTime || _enableDoubleJump && !_hasDoubleJumped)
             {
-                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_rb.velocity.x, _jumpForce), _hasJumped); // Ground jump
+                if (!_hasJumped || _hasJumped && !_hasDoubleJumped) ExecuteJump(new Vector2(_inputs.X*Mathf.Abs(_rb.velocity.x), _jumpForce), _hasJumped); // Ground jump
             }
         }
 
@@ -196,6 +202,7 @@ public class PlayerController : MonoBehaviour
             _anim.SetTrigger(doubleJump ? "DoubleJump" : "Jump");
             _hasDoubleJumped = doubleJump;
             _hasJumped = true;
+             
         }
 
         // Fall faster and allow small jumps. _jumpVelocityFalloff is the point at which we start adding extra gravity. Using 0 causes floating
