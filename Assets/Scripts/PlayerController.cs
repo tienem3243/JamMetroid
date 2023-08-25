@@ -3,7 +3,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviourSingleton<PlayerController>
 {
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private Animator _anim;
@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            _anim.SetTrigger("Punch");
+            Anim.SetTrigger("Punch");
         }
     }
 
@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
     private void SetFacingDirection(bool left)
     {
         Debug.Log(left);
-        _anim.transform.rotation = left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
+        Anim.transform.rotation = left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
 
     #endregion
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
             _hasJumped = false;
             _currentMovementLerpSpeed = 100;
             //PlayRandomClip(_landClips);
-            _anim.SetBool("Grounded", true);
+            Anim.SetBool("Grounded", true);
             OnTouchedGround?.Invoke();
             transform.SetParent(_ground[0].transform);
         }
@@ -94,7 +94,7 @@ public class PlayerController : MonoBehaviour
         {
             IsGrounded = false;
             _timeLeftGrounded = Time.time;
-            _anim.SetBool("Grounded", false);
+            Anim.SetBool("Grounded", false);
             transform.SetParent(null);
         }
 
@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
         // _currentMovementLerpSpeed should be set to something crazy high to be effectively instant. But slowed down after a wall jump and slowly released
         _rb.velocity = Vector3.MoveTowards(_rb.velocity, idealVel, _currentMovementLerpSpeed * Time.deltaTime);
 
-        _anim.SetBool("Running", _inputs.RawX != 0 && IsGrounded);
+        Anim.SetBool("Running", _inputs.RawX != 0 && IsGrounded);
      
     }
 
@@ -199,7 +199,7 @@ public class PlayerController : MonoBehaviour
             _rb.velocity = dir;
             _jumpLaunchPoof.up = _rb.velocity;
             //  _jumpParticles.Play();
-            _anim.SetTrigger(doubleJump ? "DoubleJump" : "Jump");
+            Anim.SetTrigger(doubleJump ? "DoubleJump" : "Jump");
             _hasDoubleJumped = doubleJump;
             _hasJumped = true;
              
@@ -284,7 +284,7 @@ public class PlayerController : MonoBehaviour
 
         if (_grabbing) _rb.velocity = new Vector3(0,-_slideSpeed );
 
-        _anim.SetBool("Climbing", _wallSliding || _grabbing);
+        Anim.SetBool("Climbing", _wallSliding || _grabbing);
     }
 
     #endregion
@@ -374,6 +374,8 @@ public class PlayerController : MonoBehaviour
     [Header("Audio")] [SerializeField] private AudioSource _source;
     [SerializeField] private AudioClip[] _landClips;
     [SerializeField] private AudioClip[] _dashClips;
+
+    public Animator Anim { get => _anim; set => _anim = value; }
 
     private void PlayRandomClip(AudioClip[] clips)
     {

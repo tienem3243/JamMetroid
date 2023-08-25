@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponSwap : MonoBehaviour
+public class WeaponSwap : MonoBehaviourSingleton<WeaponSwap>
 {
     [SerializeField] Animator animator;
     [ContextMenu("swap")]

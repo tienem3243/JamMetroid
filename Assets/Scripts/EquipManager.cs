@@ -38,7 +38,7 @@ public class EquipManager : MonoBehaviour
         {
             if (equipmentHolder == null) return;
             isUsed = false;
-
+           
             equipmentHolder.IsEquip = false;
             equipmentHolder = null; 
 
@@ -76,7 +76,8 @@ public class EquipManager : MonoBehaviour
         if (slot == null) return;
 
         slot.SetUp(equipment);
-        swapAdapter.SwapLayer(equipment.LayerName);
+        if (equipment.SynWithBodyAnim) ;
+        
 
     }
     public void RemoveEquipOnSlot(string slotName)
@@ -85,7 +86,7 @@ public class EquipManager : MonoBehaviour
 
         if (slot != null) slot.RemoveEquip();
         else return;
-        swapAdapter.Reset();
+        
     }
 
 }

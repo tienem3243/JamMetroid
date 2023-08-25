@@ -38,7 +38,7 @@ public class PartRobber : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            equipmentManager.RemoveEquipOnSlot("Head");
+            equipmentManager.RemoveEquipOnSlot("Hand");
         }
     }
 

@@ -17,12 +17,14 @@ public abstract class Equipment : CustomBehaviour
         set
         {
             isEquip = value;
+        
             if (isEquip == true)
             {
                 GetComponent<Collider>().enabled = false;
                 transform.localPosition = Vector3.zero;
                 transform.rotation = new Quaternion(0, 0, 0, 0);
                 rigidbody.isKinematic = true;
+                if (synWithBodyAnim) WeaponSwap.Instance.SwapLayer(layerName);
             }
             else
             {
@@ -30,6 +32,7 @@ public abstract class Equipment : CustomBehaviour
                 transform.parent = null;
                 rigidbody.useGravity = true;
                 rigidbody.isKinematic = false;
+                if (synWithBodyAnim) WeaponSwap.Instance.Reset();
             }
         }
     }
