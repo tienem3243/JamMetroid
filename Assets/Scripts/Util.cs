@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /// <summary>
 /// Ubh util.
@@ -128,6 +130,29 @@ public static class Util
     /// <summary>
     /// Get 0 ~ 360 angle.
     /// </summary>
+    /// 
+    public static Vector3 Intersect(Vector3 line1V1, Vector3 line1V2, Vector3 line2V1, Vector3 line2V2)
+    {
+        //Line1
+        float A1 = line1V2.y - line1V1.y;
+        float B1 = line1V1.x - line1V2.x;
+        float C1 = A1 * line1V1.x + B1 * line1V1.y;
+
+        //Line2
+        float A2 = line2V2.y - line2V1.y;
+        float B2 = line2V1.x - line2V2.x;
+        float C2 = A2 * line2V1.x + B2 * line2V1.y;
+
+        //Crammer
+        float delta = A1 * B2 - A2 * B1;
+
+        if (delta == 0)
+            throw new ArgumentException("Lines are parallel");
+
+        float x = (B2 * C1 - B1 * C2) / delta;
+        float y = (A1 * C2 - A2 * C1) / delta;
+        return new Vector3(x, y);
+    }
     public static float GetNormalizedAngle(float angle)
     {
         while (angle < 0f)
@@ -201,5 +226,61 @@ public static class Util
         vector /= numPoints;
 
         return vector;
+    }
+    public static Vector3 CalculatePositionOnPath(Vector3[] path,float offset,bool isCircle,out int currentWaypoint)
+    {
+        currentWaypoint = 0;
+        if (path.Length < 2)
+            return path[0];
+
+        Vector3 circlePosition = Vector3.zero;
+        float totalDistance = 0f;
+        for (int i = 0; i < path.Length - 1; i++)
+        {
+            totalDistance += Vector3.Distance(path[i], path[i + 1]);
+        }
+        if(isCircle) totalDistance += Vector3.Distance(path[0], path[path.Length - 1]);
+        float normalizedOffset = (offset % totalDistance + totalDistance) % totalDistance;
+        float remainingOffset = Mathf.Abs(normalizedOffset);
+
+        for (int i = 0; i < path.Length; i++)
+        {
+            int currentIndex = i;
+            int nextIndex = (i + 1) % path.Length;
+
+            Vector3 currentPoint = path[currentIndex];
+            Vector3 nextPoint = path[nextIndex];
+            float distance = Vector3.Distance(currentPoint, nextPoint);
+
+            if (remainingOffset <= distance)
+            {
+                float t = Mathf.Clamp01(remainingOffset / distance);
+                circlePosition = Vector3.Lerp(currentPoint, nextPoint, t);
+                break;
+            }
+            else
+            {
+                remainingOffset -= distance;
+            }
+        }
+
+        if (offset < 0)
+        {
+            Vector3 startPoint = path[path.Length - 1];
+            Vector3 endPoint = path[0];
+            Vector3 startToEnd = endPoint - startPoint;
+            circlePosition = startPoint - (circlePosition - endPoint);
+        }
+        return circlePosition;
+    }
+    public static Vector3 CalculatePositionOnPath(Vector3[] waypoints, float offset,bool isCircle)
+    {
+        return CalculatePositionOnPath(waypoints, offset,isCircle, out int path);
+    }
+
+    public static int CalculateWaypointOnPath(Vector3[] waypoints, float position,bool isCircle)
+    {
+        CalculatePositionOnPath(waypoints, position,isCircle, out int a);
+        return a;
     }
 }
