@@ -10,7 +10,7 @@ public class Gun : MonoBehaviour
 
     private bool canShoot = true;
     private float timeSinceLastShot = 0f;
-
+ 
     void Update()
     {
         timeSinceLastShot += Time.deltaTime;
@@ -22,19 +22,26 @@ public class Gun : MonoBehaviour
             {
                 Shoot();
                 timeSinceLastShot = 0f;
+               
+               
             }
+            PlayerController.Instance.Stand();
+            
         }
-        else if(Input.GetButtonUp("Fire1")){
+        else if (Input.GetButtonUp("Fire1"))
+        {
+           ;
             PlayerController.Instance.Anim.SetBool("IsShooting", false);
         }
-    }
 
+
+    }
     void Shoot()
     {
         // Instantiate the bullet prefab at the bullet spawn point's position and rotation
         var dir = PlayerController.Instance.Anim;
-         Instantiate(bulletPrefab, bulletSpawnPoint.position, dir.transform.rotation);
+        Instantiate(bulletPrefab, bulletSpawnPoint.position, dir.transform.rotation);
 
-       
+
     }
 }

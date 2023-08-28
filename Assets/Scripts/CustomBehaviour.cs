@@ -5,11 +5,11 @@ using UnityEngine;
 /// </summary>
 public abstract class CustomBehaviour : MonoBehaviour
 {
-    private GameObject m_gameObject;
-    private Transform m_transform;
-    private Renderer m_renderer;
-    private Rigidbody m_rigidbody;
-    private Animator m_animator;
+    protected GameObject m_gameObject;
+    protected Transform m_transform;
+    protected Renderer m_renderer;
+    protected Rigidbody m_rigidbody;
+    protected Animator m_animator;
 
     public new GameObject gameObject
     {

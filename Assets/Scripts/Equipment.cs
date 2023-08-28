@@ -24,6 +24,7 @@ public abstract class Equipment : CustomBehaviour
                 transform.localPosition = Vector3.zero;
                 transform.rotation = new Quaternion(0, 0, 0, 0);
                 rigidbody.isKinematic = true;
+                //to do just swap when be used
                 if (synWithBodyAnim) WeaponSwap.Instance.SwapLayer(layerName);
             }
             else
@@ -36,7 +37,7 @@ public abstract class Equipment : CustomBehaviour
             }
         }
     }
-
+        
     public abstract void Use();
    
 }

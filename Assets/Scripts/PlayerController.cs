@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
         if (Input.GetMouseButtonDown(0))
         {
             Anim.SetTrigger("Punch");
+            Stand();
         }
     }
 
@@ -55,7 +56,6 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
 
     private void SetFacingDirection(bool left)
     {
-        Debug.Log(left);
         Anim.transform.rotation = left ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 180, 0);
     }
 
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
 
     [Header("Detection")] [SerializeField] private LayerMask _groundMask;
     [SerializeField] private float _grounderOffset = -1, _grounderRadius = 0.2f;
-    [SerializeField] private float _wallCheckOffset = 0.5f, _wallCheckRadius = 0.05f;
+    [SerializeField] private float _wallCheckOffset = 0.5f, _wallCheckRadius = 0.05f, _wallCheckHeight;
     private bool _isAgainstLeftWall, _isAgainstRightWall, _pushingLeftWall, _pushingRightWall;
     public bool IsGrounded;
     public static event Action OnTouchedGround;
@@ -99,8 +99,8 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
         }
 
         // Wall detection
-        _isAgainstLeftWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(-_wallCheckOffset, 0), _wallCheckRadius, _leftWall, _groundMask) > 0;
-        _isAgainstRightWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(_wallCheckOffset, 0), _wallCheckRadius, _rightWall, _groundMask) > 0;
+        _isAgainstLeftWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(-_wallCheckOffset, _wallCheckHeight), _wallCheckRadius, _leftWall, _groundMask) > 0;
+        _isAgainstRightWall = Physics.OverlapSphereNonAlloc(transform.position + new Vector3(_wallCheckOffset, _wallCheckHeight), _wallCheckRadius, _rightWall, _groundMask) > 0;
         _pushingLeftWall = _isAgainstLeftWall && _inputs.X < 0;
         _pushingRightWall = _isAgainstRightWall && _inputs.X > 0;
     }
@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
                
                 _timeLastWallJumped = Time.time;
                 _currentMovementLerpSpeed = _wallJumpMovementLerp;
-                ExecuteJump(new Vector2(_isAgainstLeftWall ? _jumpForce : -_jumpForce, _jumpForce)); // Wall jump
+                ExecuteJump(new Vector2(_isAgainstLeftWall ? _jumpForce : -_jumpForce, _jumpForce),_hasDoubleJumped); // Wall jump
                
             }
             else if (IsGrounded || Time.time < _timeLeftGrounded + _coyoteTime || _enableDoubleJump && !_hasDoubleJumped)
@@ -204,7 +204,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
             _hasJumped = true;
              
         }
-
+      
         // Fall faster and allow small jumps. _jumpVelocityFalloff is the point at which we start adding extra gravity. Using 0 causes floating
         if (_rb.velocity.y < _jumpVelocityFalloff || _rb.velocity.y > 0 && !Input.GetKey(KeyCode.C))
             _rb.velocity += _fallMultiplier * Physics.gravity.y * Vector3.up * Time.deltaTime;
@@ -246,8 +246,8 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
     private void DrawWallSlideGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + new Vector3(-_wallCheckOffset, 0), _wallCheckRadius);
-        Gizmos.DrawWireSphere(transform.position + new Vector3(_wallCheckOffset, 0), _wallCheckRadius);
+        Gizmos.DrawWireSphere(transform.position + new Vector3(-_wallCheckOffset, _wallCheckHeight), _wallCheckRadius);
+        Gizmos.DrawWireSphere(transform.position + new Vector3(_wallCheckOffset, _wallCheckHeight), _wallCheckRadius);
     }
 
     #endregion
@@ -261,7 +261,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
     {
 
         // I added wallJumpLock but I honestly can't remember why and I'm too scared to remove it...
-        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Time.time > _timeLastWallJumped + _wallJumpLock && _inputs.RawY >= 0f;
+        var grabbing = (_isAgainstLeftWall || _isAgainstRightWall) && Time.time > _timeLastWallJumped + _wallJumpLock && _inputs.RawY>=0f;
         
         
 
@@ -271,15 +271,18 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
         if (grabbing && !_grabbing)
         {
             _grabbing = true;
+            transform.SetParent(_isAgainstLeftWall ? _leftWall[0].transform : _rightWall[0].transform);
             _wallGrabParticles.transform.position = transform.position + new Vector3(_pushingLeftWall ? -_wallCheckOffset : _wallCheckOffset, 0);
             _wallGrabParticles.Play();
             SetFacingDirection(_isAgainstLeftWall);
+          
         }
         else if (!grabbing && _grabbing)
         {
             _grabbing = false;
+            transform.SetParent(null);
             _wallGrabParticles.Stop();
-            Debug.Log("stopped");
+           
         }
 
         if (_grabbing) _rb.velocity = new Vector3(0,-_slideSpeed );
@@ -339,7 +342,11 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
             }
         }
     }
+    public void Stand()
+    {
 
+        rigidbody.velocity = IsGrounded ? new Vector3(0, rigidbody.velocity.y, 0) : rigidbody.velocity;
+    }
     #endregion
 
     #region Impacts
@@ -383,7 +390,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
     }
 
     #endregion
-
+   
     private struct FrameInputs
     {
         public float X, Y;
