@@ -76,7 +76,7 @@ public class EquipManager : MonoBehaviour
         if (slot == null) return;
 
         slot.SetUp(equipment);
-        if (equipment.SynWithBodyAnim) ;
+
         
 
     }

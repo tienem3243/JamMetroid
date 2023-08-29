@@ -7,7 +7,7 @@ using System;
 
 public class ConsoleCheat : MonoBehaviour
 {
-    private bool _enableCheat;
+    //private bool _enableCheat;
     public TMP_InputField text;
     [SerializeField] List<CommandExcercute> commandList= new List<CommandExcercute>();
     private void Update()
@@ -47,7 +47,7 @@ public class ConsoleCheat : MonoBehaviour
         {
             case "enable":
                 Debug.Log("Console is Enable");
-                _enableCheat = true;
+                //_enableCheat = true;
                 break;
             case "gofast":
                 Debug.Log("Go fast");
