@@ -6,24 +6,29 @@ using System.Linq;
 
 public class TaskPatrol : Node
 {
-    [SerializeField] bool lookat;
+    bool lookat;
     private Transform[] _waypoints;
     private Transform _transform;
     private int _currentWaypointIndex;
     private float _waitCounter;
-    [SerializeField] private float _speed = 5;
-    [SerializeField] private float _waitTime = 2f;
+    private float _speed = 5;
+    private float _waitTime = 2f;
     private bool _isWaiting;
-    [SerializeField] private float offset;
-    [SerializeField] bool isCircle;
-    public TaskPatrol(Transform transform,Transform[] wayPoints,bool lookat,float speed,float waitTime,bool isCircle)
+    private float offset;
+    bool isCircle;
+    Animator _animator;
+  
+
+    public TaskPatrol(Transform transform, Transform[] wayPoints, bool lookat, float speed, float waitTime, bool isCircle)
     {
         _waypoints = wayPoints;
         _transform = transform;
         _speed = speed;
         _waitTime = waitTime;
         this.isCircle = isCircle;
-
+        this.lookat = lookat;
+        _animator = transform.GetComponent<Animator>();
+        Start();
     }
     private void OnDrawGizmos()
     {
@@ -72,6 +77,7 @@ public class TaskPatrol : Node
         Transform wp = _waypoints[_currentWaypointIndex];
         if (_isWaiting)
         {
+            _animator.SetBool("IsWalking", false);
             _waitCounter += Time.deltaTime;
             if (_waitCounter <= _waitTime)
             {
@@ -79,8 +85,9 @@ public class TaskPatrol : Node
             }
             _isWaiting = false;
         }
-        if (Vector3.Distance(wp.position, _transform.position) <= 0.01f)
+        if (Mathf.Abs(_transform.position.x - wp.position.x) <= 0.1f)
         {
+            
             _transform.position = wp.position;
             if (!isCircle && _currentWaypointIndex == _waypoints.Length - 1)
             {
@@ -96,8 +103,13 @@ public class TaskPatrol : Node
         else
         {
             if (lookat)
-                _transform.LookAt(wp.position);
-            _transform.position = Vector3.MoveTowards(_transform.position, wp.position, _speed * Time.deltaTime);
+            {
+                Util.LookAtLerp(_transform, wp);
+
+            }
+            _isWaiting = true;
+            _animator.SetBool("IsWalking", true);
+            _transform.position = Vector2.MoveTowards (_transform.position, wp.position, _speed * Time.deltaTime);
         }
         state = NodeState.RUNNING;
         return state;

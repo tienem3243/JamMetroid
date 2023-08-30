@@ -283,4 +283,11 @@ public static class Util
         CalculatePositionOnPath(waypoints, position,isCircle, out int a);
         return a;
     }
+    public static void LookAtLerp(Transform _transform,Transform target,float speed=1)
+    {
+        var lookPos = target.position - _transform.position;
+        lookPos.y = 0;
+        var rotation = Quaternion.LookRotation(lookPos);
+        _transform.rotation = Quaternion.Slerp(_transform.rotation, rotation,speed* Time.deltaTime);
+    }
 }

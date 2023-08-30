@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gun : MonoBehaviour
+public class Gun : Equipment
 {
     public Transform bulletPrefab;
     public Transform bulletSpawnPoint;
@@ -13,6 +13,7 @@ public class Gun : MonoBehaviour
  
     void Update()
     {
+        if (!IsEquip) return;
         timeSinceLastShot += Time.deltaTime;
 
         if (Input.GetButton("Fire1") && canShoot)
@@ -43,5 +44,10 @@ public class Gun : MonoBehaviour
         Instantiate(bulletPrefab, bulletSpawnPoint.position, dir.transform.rotation);
 
 
+    }
+
+    public override void Use()
+    {
+        throw new System.NotImplementedException();
     }
 }

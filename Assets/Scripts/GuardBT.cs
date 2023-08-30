@@ -21,9 +21,9 @@ public class GuardBT : BehaviourTree.Tree
             new Sequence(new List<Node>
             {
              new CheckTargetInFOV(transform,rangeCheck,maskTarget),
-             new TaskGotoTarget(transform,gotoSpeed)
+             new TaskGotoTarget(transform,gotoSpeed,15f)
             }),
-            new TaskPatrol(transform,wayPoint,false,5,1,true),
+            new TaskPatrol(transform,wayPoint,true,5,2,true),
         });
         Debug.Log(root.Evaluate());
             return root;

@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
 
     private void Update()
     {
+        HandleAttack();
         GatherInputs();
 
         HandleGrounding();
@@ -24,7 +25,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
         HandleWallGrab();
 
         HandleDashing();
-        HandleAttack();
+      
        
     }
 
@@ -33,7 +34,7 @@ public class PlayerController : MonoBehaviourSingleton<PlayerController>
         if (Input.GetMouseButtonDown(0))
         {
             Anim.SetTrigger("Punch");
-            Stand();
+        
         }
     }
 
